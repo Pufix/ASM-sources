@@ -1,0 +1,49 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  extern exit
+     5                                  import exit msvcrt.dll
+     6                                  
+     7                                  segment data use32 class=data
+     8                                      ;x+(2-a*b)/(a*3)-a+c
+     9 00000000 14                          a db 20
+    10 00000001 1400                        b dw 20
+    11 00000003 14000000                    c dd 20
+    12 00000007 C800000000000000            x dq 200
+    13                                      ;res= 193
+    14                                  segment code use32 class=code
+    15                                      start:
+    16 00000000 A0[00000000]                    mov Al,[a]
+    17 00000005 6698                            cbw
+    18 00000007 66F72D[01000000]                imul word[b]
+    19 0000000E 6652                            push Dx
+    20 00000010 6650                            push Ax
+    21 00000012 58                              pop EAx
+    22 00000013 BB02000000                      mov EBx,2
+    23 00000018 29C3                            sub EBx,EAx ;EBx = (2-a*b)
+    24 0000001A A0[00000000]                    mov Al,[a]
+    25 0000001F B103                            mov Cl,3
+    26 00000021 F6E9                            imul Cl
+    27 00000023 6689C1                          mov Cx,Ax
+    28 00000026 53                              push EBx
+    29 00000027 6658                            pop Ax
+    30 00000029 665A                            pop Dx
+    31 0000002B 66F7F9                          idiv Cx ; Ax=(2-a*b)/(a*3)  Dx remainder
+    32 0000002E 6689C1                          mov Cx,Ax
+    33 00000031 A0[00000000]                    mov Al,[a]
+    34 00000036 6698                            cbw
+    35 00000038 6689C2                          mov Dx,Ax
+    36 0000003B 6689C8                          mov Ax,Cx
+    37 0000003E 6629D0                          sub Ax,Dx ; Ax=(2-a*b)/(a*3)-a
+    38 00000041 98                              cwde
+    39 00000042 0305[03000000]                  add EAx,[c];EAx=(2-a*b)/(a*3)-a+c
+    40                                          
+    41                                          
+    42                                          
+    43                                          
+    44 00000048 99                              cdq  ;EDx:EAx=(2-a*b)/(a*3)-a+c
+    45 00000049 0305[07000000]                  add EAx,[x]   
+    46 0000004F 1315[0B000000]                  adc EDx,[x+4] ;EDx:EAx=x+(2-a*b)/(a*3)-a+c
+    47                                          ;results are in EDx:EAx
+    48 00000055 6A00                            push dword 0
+    49 00000057 FF15[00000000]                  call [exit]

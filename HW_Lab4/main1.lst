@@ -1,0 +1,41 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  extern exit
+     5                                  import exit msvcrt.dll
+     6                                  
+     7                                  segment data use32 class=data
+     8 00000000 00                          res1 db 0
+     9 00000001 <res 00000004>              b resd 1 
+    10 00000005 F50D0C39                    a dd 0011_1001_0000_1100_0000_1101_1111_0101b
+    11 00000009 <res 00000001>              c resb 1
+    12                                  segment code use32 class=code
+    13                                  ;Given the doubleword A, obtain the integer number n represented on the bits 14-17 of A. Then obtain the doubleword B by rotating A n positions to the left. Finally, obtain the byte C as follows:
+    14                                  ;the btis 0-5 of C are the same as the bits 1-6 of B
+    15                                  ;the bits 6-7 of C are the same as the bits 17-18 of B
+    16                                      start:
+    17 00000000 A1[05000000]                    mov EAx,[a]
+    18 00000005 C1C80E                          ror EAx,14
+    19 00000008 88C1                            mov Cl,Al
+    20 0000000A 80E10F                          and Cl,00001111b
+    21 0000000D 880D[00000000]                  mov [res1],Cl
+    22 00000013 A1[05000000]                    mov EAx,[a]
+    23 00000018 D3C0                            rol EAx,Cl
+    24 0000001A A3[01000000]                    mov [b],EAx
+    25 0000001F D1C8                            ror EAx,1
+    26 00000021 B23F                            mov Dl,0011_1111b
+    27 00000023 20C2                            and Dl,Al
+    28 00000025 C1C80A                          ror EAx,10
+    29 00000028 24C0                            and Al,1100_0000b
+    30 0000002A 08C2                            or  Dl,Al
+    31 0000002C 8815[09000000]                  mov [c],Dl
+    32                                          
+    33                                          
+    34 00000032 6A00                            push dword 0
+    35 00000034 FF15[00000000]                  call [exit]
+    36                                          
+    37                                          
+    38                                          
+    39                                          
+    40                                          
+    41                                          

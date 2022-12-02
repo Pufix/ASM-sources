@@ -1,0 +1,61 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  extern exit, fopen, fclose, fprintf
+     5                                  import exit msvcrt.dll
+     6                                  import fopen msvcrt.dll
+     7                                  import fclose msvcrt.dll
+     8                                  import fprintf msvcrt.dll
+     9                                  
+    10                                  segment data use32 class=data
+    11 00000000 28444546494E454420-         text db "(DEFINED in THE data SEGMENT)",0
+    11 00000009 696E20544845206461-
+    11 00000012 7461205345474D454E-
+    11 0000001B 542900             
+    12                                      len equ $-text
+    13 0000001E 63656170612E747874-         filename db "ceapa.txt",0
+    13 00000027 00                 
+    14 00000028 7700                        accesmode db "w",0
+    15                                      
+    16                                  segment code use32 class=code
+    17                                  
+    18                                      start:
+    19 00000000 B91E000000                      mov ecx, len
+    20 00000005 BE[00000000]                    mov esi, text
+    21 0000000A BF[00000000]                    mov edi, text
+    22 0000000F E341                            jecxz end
+    23                                          while1:
+    24 00000011 AC                                  lodsb
+    25 00000012 3C41                                cmp al, 'A'
+    26 00000014 7206                                jb notbigletter
+    27 00000016 3C5A                                cmp al, 'Z'
+    28 00000018 7702                                ja notbigletter
+    29 0000001A 0420                                add al, 'a'-'A'
+    30                                              notbigletter:
+    31 0000001C AA                                  stosb
+    32 0000001D E2F2                            loop while1
+    33 0000001F 68[28000000]                    push accesmode
+    34 00000024 68[1E000000]                    push filename
+    35 00000029 FF15[00000000]                  call [fopen]
+    36 0000002F 83C408                          add esp, 8
+    37 00000032 89C3                            mov ebx,eax
+    38 00000034 83F800                          cmp eax, 0
+    39 00000037 7419                            je end
+    40 00000039 68[00000000]                    push text
+    41 0000003E 53                              push ebx
+    42 0000003F FF15[00000000]                  call [fprintf]
+    43 00000045 83C404                          add esp,4
+    44 00000048 53                              push ebx
+    45 00000049 FF15[00000000]                  call [fclose]
+    46 0000004F 83C404                          add esp,4
+    47                                      end:
+    48 00000052 6A00                            push dword 0
+    49 00000054 FF15[00000000]                  call [exit]
+    50                                          
+    51                                          
+    52                                          
+    53                                          
+    54                                          
+    55                                          
+    56                                          
+    57                                          

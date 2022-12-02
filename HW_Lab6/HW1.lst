@@ -1,0 +1,43 @@
+     1                                  bits 32
+     2                                  
+     3                                  extern exit, printf
+     4                                  global start
+     5                                  import exit msvcrt.dll
+     6                                  import printf msvcrt.dll
+     7                                  
+     8                                  segment data use32 class=data
+     9                                  ;Given an array S of doublewords, build the array of bytes D formed from bytes of doublewords sorted as unsigned numbers in ascending order
+    10 00000000 07563412153C2B1A            s DD 12345607h, 1A2B3C15h
+    11                                      len equ $-s
+    12 00000008 <res 00000008>              d resb len
+    13 00000010 01                          aux db 1
+    14                                      
+    15                                  segment code use32 class=code
+    16                                      start:
+    17 00000000 B907000000                      mov ecx,len-1
+    18 00000005 BE[00000000]                    mov esi,s
+    19 0000000A BF[08000000]                    mov edi,d
+    20 0000000F E31B                            jecxz fin
+    21                                          for1:
+    22 00000011 89F3                                mov ebx,esi
+    23 00000013 AC                                  lodsb
+    24 00000014 51                                  push ecx
+    25                                              for2:
+    26 00000015 3A06                                    cmp al,[esi]
+    27 00000017 7608                                    jbe postswap
+    28 00000019 8A13                                        mov dl,[ebx]
+    29 0000001B 8A06                                        mov al,[esi]
+    30 0000001D 8816                                        mov [esi],dl
+    31 0000001F 8803                                        mov [ebx],al
+    32                                                  postswap:
+    33 00000021 46                                      inc esi
+    34 00000022 E2F1                                loop for2
+    35 00000024 59                                  pop ecx
+    36 00000025 AA                                  stosb
+    37 00000026 89DE                                mov esi,ebx
+    38 00000028 46                                  inc esi
+    39 00000029 E2E6                            loop for1
+    40 0000002B A4                              movsb 
+    41                                      fin:
+    42 0000002C 6A00                            push dword 0
+    43 0000002E FF15[00000000]                  call [exit]
