@@ -8,19 +8,19 @@
      8                                  import fprintf msvcrt.dll
      9                                  
     10                                  segment data use32 class=data
-    11 00000000 28444546494E454420-         text db "(DEFINED in THE data SEGMENT)",0
+    11 00000000 28444546494E454420-         text db "(DEFINED in THE data SEGMENT) 2012",0
     11 00000009 696E20544845206461-
     11 00000012 7461205345474D454E-
-    11 0000001B 542900             
+    11 0000001B 5429203230313200   
     12                                      len equ $-text
-    13 0000001E 63656170612E747874-         filename db "ceapa.txt",0
-    13 00000027 00                 
-    14 00000028 7700                        accesmode db "w",0
+    13 00000023 63656170612E747874-         filename db "ceapa.txt",0
+    13 0000002C 00                 
+    14 0000002D 7700                        accesmode db "w",0
     15                                      
     16                                  segment code use32 class=code
     17                                  
     18                                      start:
-    19 00000000 B91E000000                      mov ecx, len
+    19 00000000 B923000000                      mov ecx, len
     20 00000005 BE[00000000]                    mov esi, text
     21 0000000A BF[00000000]                    mov edi, text
     22 0000000F E341                            jecxz end
@@ -34,8 +34,8 @@
     30                                              notbigletter:
     31 0000001C AA                                  stosb
     32 0000001D E2F2                            loop while1
-    33 0000001F 68[28000000]                    push accesmode
-    34 00000024 68[1E000000]                    push filename
+    33 0000001F 68[2D000000]                    push accesmode
+    34 00000024 68[23000000]                    push filename
     35 00000029 FF15[00000000]                  call [fopen]
     36 0000002F 83C408                          add esp, 8
     37 00000032 89C3                            mov ebx,eax
