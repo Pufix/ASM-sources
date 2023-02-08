@@ -1,0 +1,127 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  extern exit, printf
+     5                                  import printf msvcrt.dll
+     6                                  import exit msvcrt.dll
+     7                                  ;extern subprog
+     8                                  extern scanf 
+     9                                  import scanf msvcrt.dll
+    10                                  
+    11                                  %include "second.asm"
+     1                              <1> bits 32
+     2                              <1> 
+     3                              <1> global subprog
+     4                              <1> extern exit, printf, scanf
+     5                              <1> import exit msvcrt.dll
+     6                              <1> import printf msvcrt.dll
+     7                              <1> import scanf msvcrt.dll
+     8                              <1> 
+     9                              <1> 
+    10                              <1> segment data use32 class=data
+    11 00000000 00000000            <1>     chr dd 0
+    12                              <1> 
+    13                              <1> 
+    14                              <1> segment code use32 class=code
+    15                              <1>     subprog:
+    16                              <1>         ;puts the good word in edi
+    17                              <1>         for3:
+    18 00000000 8B542404            <1>             mov edx,[esp+4]
+    19 00000004 51                  <1>             push ecx
+    20                              <1>             
+    21                              <1>             
+    22 00000005 68[00000000]        <1>             push chr
+    23 0000000A 52                  <1>             push edx
+    24 0000000B FF15[00000000]      <1>             call [scanf]
+    25 00000011 83C408              <1>             add esp,8
+    26 00000014 59                  <1>             pop ecx
+    27 00000015 A0[00000000]        <1>             mov al,[chr]
+    28 0000001A AA                  <1>             stosb
+    29 0000001B 3C20                <1>             cmp al,' '
+    30 0000001D 740A                <1>             je afterfor3
+    31 0000001F 3C2E                <1>             cmp al,'.'
+    32 00000021 7406                <1>             je afterfor3
+    33 00000023 3C0A                <1>             cmp al,10
+    34 00000025 7402                <1>             je afterfor3
+    35 00000027 EBD7                <1>         jmp for3
+    36                              <1>         afterfor3:
+    37 00000029 C3                  <1>         ret
+    12                                  
+    13                                  segment data use32 class=data
+    14 00000004 00000000                    n dd 0
+    15 00000008 256400                      format1 db "%d",0
+    16 0000000B 256300                      format2 db "%c",0
+    17 0000000E <res 00000001>              char resb 1
+    18 0000000F <res 0000012C>              res resb 300
+    19                                  segment code use32 class=code
+    20                                  
+    21                                      start:
+    22                                          ;get n
+    23 0000002A 68[04000000]                    push n
+    24 0000002F 68[08000000]                    push format1
+    25 00000034 FF15[00000000]                  call [scanf]
+    26 0000003A 68[0E000000]                    push char
+    27 0000003F 68[0B000000]                    push format2
+    28 00000044 FF15[00000000]                  call [scanf]
+    29 0000004A 83C410                          add esp, 16
+    30 0000004D BF[0F000000]                    mov edi,res
+    31 00000052 8B0D[04000000]                  mov ecx, [n]
+    32                                          
+    33                                          for1:
+    34 00000058 8B1D[04000000]                      mov ebx, [n]
+    35 0000005E 29CB                                sub ebx,ecx
+    36 00000060 51                                  push ecx
+    37 00000061 89D9                                mov ecx,ebx
+    38                                              ;reads and overwrites the words before the good space
+    39                                              for2:
+    40 00000063 E323                                    jecxz afterfor2
+    41                                                  
+    42 00000065 51                                      push ecx
+    43 00000066 68[0E000000]                            push char
+    44 0000006B 68[0B000000]                            push format2
+    45 00000070 FF15[00000000]                          call [scanf]
+    46 00000076 83C408                                  add esp,8
+    47 00000079 59                                      pop ecx
+    48 0000007A 8A1D[0E000000]                          mov bl,[char]
+    49 00000080 80FB20                                  cmp bl, ' '
+    50 00000083 7501                                    jne notspace
+    51 00000085 49                                          dec ecx
+    52                                                  notspace:
+    53 00000086 EBDB                                jmp for2
+    54                                              afterfor2:
+    55                                              
+    56                                              ;save the good words
+    57                                              ;edi must already be set to the destination before calling the function, along side the direction flag
+    58 00000088 68[0B000000]                        push format2 ;1 parameter of type string
+    59 0000008D E86EFFFFFF                          call subprog
+    60 00000092 83C404                              add esp,4 ;the parameter is cleaned in main
+    61                                              
+    62                                              ;dumps the rest of the words
+    63                                              for4:
+    64 00000095 51                                      push ecx
+    65 00000096 68[0E000000]                            push char
+    66 0000009B 68[0B000000]                            push format2
+    67 000000A0 FF15[00000000]                          call [scanf]
+    68 000000A6 83C408                                  add esp,8
+    69 000000A9 59                                      pop ecx
+    70 000000AA A0[0E000000]                            mov al,[char]
+    71 000000AF 3C0A                                    cmp al,10
+    72                                                  
+    73 000000B1 7402                                    je afterfor4
+    74                                                  
+    75 000000B3 EBE0                                jmp for4
+    76                                              afterfor4:
+    77 000000B5 59                                  pop ecx
+    78                                              
+    79                                              
+    80 000000B6 E2A0                            loop for1
+    81                                          
+    82                                          ;printing the fully formed array
+    83 000000B8 B000                            mov al,0
+    84 000000BA AA                              stosb
+    85 000000BB 68[0F000000]                    push res
+    86 000000C0 FF15[00000000]                  call [printf]
+    87 000000C6 83C404                          add esp,4
+    88                                      end:
+    89 000000C9 6A00                            push dword 0
+    90 000000CB FF15[00000000]                  call [exit]

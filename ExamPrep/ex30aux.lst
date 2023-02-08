@@ -1,0 +1,32 @@
+     1                                  bits 32
+     2                                  
+     3                                  global reverse
+     4                                  segment data use32 class=data
+     5 00000000 00<rept>                    string times 1000 db 0
+     6                                  segment code use32 class=code
+     7                                      reverse:
+     8 00000000 8B742404                    mov esi, [esp+4]
+     9 00000004 BF[00000000]                mov edi, string
+    10 00000009 FC                          cld
+    11 0000000A B000                        mov al,0
+    12                                      for1:
+    13 0000000C A4                              movsb
+    14 0000000D 3807                            cmp [edi],al
+    15 0000000F 7402                            je outfor1
+    16 00000011 EBF9                        jmp for1
+    17                                      outfor1:
+    18 00000013 89FE                        mov esi,edi
+    19 00000015 4E                          dec esi
+    20 00000016 8B7C2404                    mov edi,[esp+4]
+    21                                      for2:
+    22 0000001A FD                              std
+    23 0000001B AC                              lodsb
+    24 0000001C FC                              cld
+    25 0000001D A4                              movsb
+    26 0000001E 81FE[00000000]                  cmp esi,string
+    27 00000024 7402                            je outfor2
+    28 00000026 EBF2                        jmp for2
+    29                                      outfor2:
+    30 00000028 C3                          ret 
+    31                                          
+    32                                          

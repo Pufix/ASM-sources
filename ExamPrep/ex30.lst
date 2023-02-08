@@ -1,0 +1,24 @@
+     1                                  ;Se citeste o propozitie de la tastatura. Sa se inverseze fiecare cuvant si sa se afiseze pe ecran.
+     2                                  bits 32
+     3                                  
+     4                                  global start
+     5                                  extern exit, scanf, printf
+     6                                  import exit msvcrt.dll
+     7                                  import scanf msvcrt.dll
+     8                                  import printf msvcrt.dll
+     9                                  
+    10                                  segment data use32 class=data
+    11 00000000 00<rept>                    propozitie times 1000 db 0
+    12                                      
+    13 000003E8 257300                      formatstr db "%s",0
+    14                                      
+    15                                      
+    16                                      
+    17                                      
+    18                                      
+    19                                      
+    20                                      
+    21                                  segment code use32 class=code
+    22                                      start:
+    23 00000000 6A00                        push dword 0
+    24 00000002 FF15[00000000]              call [exit]

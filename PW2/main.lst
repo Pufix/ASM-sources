@@ -1,0 +1,132 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  extern exit, fopen, scanf, fclose, fprintf
+     5                                  import exit msvcrt.dll
+     6                                  import scanf msvcrt.dll
+     7                                  import fopen msvcrt.dll
+     8                                  import fclose msvcrt.dll
+     9                                  import fprintf msvcrt.dll
+    10                                  
+    11                                  segment data use32 class=data
+    12 00000000 00                          n db 0
+    13 00000001 256400                      format db "%d",0
+    14 00000004 00000000                    valoare dd 0
+    15 00000008 00                          caracter db 0
+    16 00000009 256300                      formatchr db "%c",0
+    17 0000000C 00                          extra db 0
+    18 0000000D 01                          negativ db 1
+    19 0000000E <res 00000064>              numar resb 100
+    20 00000072 00000000                    fisier dd 0
+    21 00000076 6E756D657265322E74-         numefisier db "numere2.txt",0
+    21 0000007F 787400             
+    22 00000082 7700                        modfisier db "w",0
+    23 00000084 257300                      formatstring db "%s",0
+    24                                      
+    25                                  segment code use32 class=code
+    26                                  
+    27                                      start:
+    28                                          
+    29 00000000 68[82000000]                    push modfisier
+    30 00000005 68[76000000]                    push numefisier
+    31 0000000A FF15[00000000]                  call [fopen]
+    32 00000010 83C408                          add esp, 4*2
+    33 00000013 A3[72000000]                    mov [fisier],eax
+    34                                          
+    35                                          
+    36 00000018 68[00000000]                    push n
+    37 0000001D 68[09000000]                    push formatchr
+    38 00000022 FF15[00000000]                  call [scanf]
+    39 00000028 83C408                          add esp, 4*2
+    40                                          
+    41 0000002B 68[08000000]                    push caracter
+    42 00000030 68[09000000]                    push formatchr
+    43 00000035 FF15[00000000]                  call [scanf]
+    44 0000003B 83C408                          add esp, 4*2
+    45                                          
+    46                                          repeta:
+    47 0000003E 68[08000000]                        push caracter
+    48 00000043 68[09000000]                        push formatchr
+    49 00000048 FF15[00000000]                      call [scanf]
+    50 0000004E 83C408                              add esp, 4*2
+    51                                              
+    52 00000051 A0[08000000]                        mov al, [caracter]
+    53                                              
+    54 00000056 3C24                                cmp al, '$'
+    55 00000058 0F8496000000                        je nunumar
+    56                                              
+    57 0000005E BF[0E000000]                        mov edi, numar
+    58                                              
+    59 00000063 3C2D                                cmp al, '-'
+    60 00000065 C605[0D000000]FF                    mov [negativ], byte -1
+    61 0000006C 7419                                je pozitiv
+    62 0000006E AA                                  stosb
+    63                                              
+    64 0000006F 68[08000000]                        push caracter
+    65 00000074 68[09000000]                        push formatchr
+    66 00000079 FF15[00000000]                      call [scanf]
+    67 0000007F 83C408                              add esp, 4*2
+    68 00000082 A0[08000000]                        mov al,[caracter]
+    69                                              
+    70                                              pozitiv:
+    71 00000087 C605[0D000000]01                    mov [negativ], byte 1
+    72                                              postpozitiv:
+    73                                              
+    74                                              
+    75 0000008E AA                                  stosb
+    76                                              
+    77                                              repeta2:
+    78                                              
+    79 0000008F 68[08000000]                            push caracter
+    80 00000094 68[09000000]                            push formatchr
+    81 00000099 FF15[00000000]                          call [scanf]
+    82 0000009F 83C408                                  add esp, 4*2
+    83 000000A2 A0[08000000]                            mov al,[caracter]
+    84                                                  
+    85                                                  
+    86 000000A7 3C20                                    cmp al,' '
+    87 000000A9 7403                                    je gatanr
+    88                                                  
+    89 000000AB AA                                      stosb
+    90                                                  
+    91                                              
+    92 000000AC EBE1                                jmp repeta2
+    93                                              gatanr:
+    94 000000AE B020                                mov al, ' '
+    95 000000B0 AA                                  stosb
+    96 000000B1 B000                                mov al, 0
+    97 000000B3 AA                                  stosb
+    98                                              
+    99 000000B4 8A47FD                              mov al,[edi-3]
+   100                                              
+   101 000000B7 3C31                                cmp al,'1'
+   102 000000B9 7434                                je notok
+   103 000000BB 3C33                                cmp al,'3'
+   104 000000BD 7430                                je notok
+   105 000000BF 3C35                                cmp al,'5'
+   106 000000C1 742C                                je notok
+   107 000000C3 3C37                                cmp al,'7'
+   108 000000C5 7428                                je notok
+   109 000000C7 3C39                                cmp al,'9'
+   110 000000C9 7424                                je notok
+   111                                              
+   112 000000CB 8A47FC                              mov al, [edi-4]
+   113                                              
+   114 000000CE 3A05[00000000]                      cmp al,[n]
+   115 000000D4 7519                                jne notok
+   116                                              
+   117 000000D6 68[0E000000]                        push numar
+   118 000000DB 68[84000000]                        push formatstring
+   119 000000E0 FF35[72000000]                      push dword [fisier]
+   120 000000E6 FF15[00000000]                      call [fprintf]
+   121 000000EC 83C40C                              add esp,4*3
+   122                                              
+   123                                              notok:
+   124 000000EF E94AFFFFFF                      jmp repeta
+   125                                          nunumar:
+   126                                          
+   127 000000F4 FF35[72000000]                  push dword [fisier]
+   128 000000FA FF15[00000000]                  call [fclose]
+   129 00000100 83C404                          add esp,4
+   130 00000103 6A00                            push dword 0
+   131 00000105 FF15[00000000]                  call [exit]

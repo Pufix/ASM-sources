@@ -1,0 +1,16 @@
+     1                                  bits 32
+     2                                  
+     3                                  global subprog
+     4                                  extern exit, printf
+     5                                  import exit msvcrt.dll
+     6                                  import printf msvcrt.dll
+     7                                  
+     8                                  
+     9                                  
+    10                                  segment code use32 class=code
+    11                                  
+    12                                      subprog:
+    13 00000000 58                              pop eax
+    14 00000001 FF15[00000000]                  call [printf]
+    15 00000007 50                              push eax
+    16 00000008 C3                              ret

@@ -1,0 +1,60 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  extern exit, printf, scanf 
+     5                                  import printf msvcrt.dll
+     6                                  import exit msvcrt.dll
+     7                                  import scanf msvcrt.dll
+     8                                  
+     9                                  segment data use32 class=data
+    10 00000000 00000000                    numar dd 0 
+    11 00000004 <res 000003E8>              afisaj resb 1000
+    12 000003EC 257800                      format db "%x",0
+    13                                      ;12AC54ED 4311AA99 00A3BC15 FFFFFFFFF
+    14 000003EF 00000000                    contor dd 0
+    15                                      
+    16                                  segment code use32 class=code
+    17                                  
+    18                                      start:
+    19 00000000 BF[04000000]                    mov edi,afisaj
+    20                                          repeta:
+    21 00000005 FF05[EF030000]                      inc dword [contor]
+    22 0000000B 68[00000000]                        push numar
+    23 00000010 68[EC030000]                        push format
+    24 00000015 FF15[00000000]                      call [scanf]
+    25 0000001B 83C408                              add esp,4*2
+    26                                              
+    27 0000001E A1[00000000]                        mov eax,[numar]
+    28 00000023 83F8FF                              cmp eax,-1
+    29 00000026 741B                                je final
+    30                                              
+    31 00000028 B903000000                          mov ecx,3
+    32 0000002D BE[00000000]                        mov esi,numar
+    33 00000032 AC                                  lodsb 
+    34 00000033 88C3                                mov bl,al
+    35                                              repeta2:
+    36 00000035 AC                                      lodsb 
+    37 00000036 38D8                                    cmp al,bl
+    38 00000038 7702                                    ja notok
+    39 0000003A 88C3                                    mov bl,al
+    40                                                  notok:
+    41 0000003C E2F7                                loop repeta2
+    42 0000003E 88D8                                mov al,bl
+    43 00000040 AA                                  stosb
+    44 00000041 EBC2                            jmp repeta
+    45                                          final:
+    46 00000043 BE[04000000]                    mov esi,afisaj
+    47 00000048 8B0D[EF030000]                  mov ecx,[contor]
+    48                                          afisare:
+    49 0000004E 51                                  push ecx
+    50 0000004F B800000000                          mov eax,0
+    51 00000054 AC                                  lodsb
+    52 00000055 50                                  push eax
+    53 00000056 68[EC030000]                        push format
+    54 0000005B FF15[00000000]                      call [printf]
+    55 00000061 83C408                              add esp,4*2
+    56 00000064 59                                  pop ecx
+    57 00000065 E2E7                            loop afisare
+    58                                          finalmare:
+    59 00000067 6A00                            push dword 0
+    60 00000069 FF15[00000000]                  call [exit]

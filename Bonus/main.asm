@@ -66,6 +66,9 @@ segment code use32 class=code
             notspace:
             inc ecx
         loop loop1
+        
+        
+        
         mov esi, result
         mov ecx,0
         mov cl,[len]
